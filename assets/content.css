@@ -1,0 +1,273 @@
+/* Locally served fonts. */
+@font-face {
+  font-family: "Google Sans Flex";
+  src: url("fonts/google-sans-flex.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("fonts/inter.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: optional;
+}
+
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("fonts/space-grotesk.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: optional;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("fonts/jetbrains-mono.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: optional;
+}
+
+[hidden],
+:root:not(.is-interactive) .js-control,
+.is-interactive #research-list-view[data-collapsed] {
+  display: none !important;
+}
+
+:root:not(.is-interactive) .reveal {
+  opacity: 1;
+  transform: none;
+}
+
+.hero-bio .aff { --aff: var(--aff-berkeley); }
+
+.hero h1,
+.tagline-primary {
+  font-family: "Google Sans Flex", var(--font-display);
+}
+
+.pub-media { --media-radius: 8px; }
+.grid-video { --media-radius: 10px; }
+
+.pub-media img,
+.grid-video img {
+  border-radius: calc(var(--media-radius) - 1px);
+}
+
+/* Keep every slide inside the same rounded viewport, including during fades. */
+.cover-carousel { position: relative; }
+
+.cover-link {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  border-radius: calc(var(--media-radius) - 1px);
+}
+
+.cover-carousel .cover-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: none;
+  transition: none;
+}
+
+.cover-carousel:hover .cover-frame { transform: none; }
+
+.cover-frame.is-previous { opacity: 1; z-index: 1; }
+.cover-frame.is-active {
+  opacity: 1;
+  z-index: 2;
+  animation: cover-fade-in 0.45s ease both;
+}
+
+@keyframes cover-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.cover-controls {
+  --glass-step: 24px;
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+  display: flex;
+  padding: 3px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.065);
+  color: #233b3c;
+  -webkit-backdrop-filter: blur(0.6px) saturate(1.05);
+  backdrop-filter: blur(0.6px) saturate(1.05);
+  box-shadow: 0 4px 10px rgba(10, 20, 25, 0.16), 0 0 0 0.5px rgba(10, 20, 25, 0.14);
+  isolation: isolate;
+}
+
+.cover-controls.has-lens { -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+.cover-glass-lens {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cover-controls::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: var(--glass-step);
+  height: var(--glass-step);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.17);
+  transform: translateX(calc(var(--active-slide, 0) * var(--glass-step)));
+  transition: transform 0.4s cubic-bezier(0.2, 1.35, 0.45, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cover-controls::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 0.7px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.06) 35%, rgba(10, 20, 25, 0.12) 58%, rgba(255, 255, 255, 0.36)), radial-gradient(ellipse at var(--glass-x, 30%) 0%, rgba(255, 255, 255, 0.5), transparent 65%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.cover-controls[data-contrast="light"] {
+  color: #f0fffd;
+}
+
+.cover-controls[data-contrast="light"] button[aria-pressed="true"] {
+  color: #79f1e0;
+}
+
+.grid-video .cover-controls { --glass-step: 20px; padding: 2px; }
+.grid-video .cover-controls::before { left: 2px; top: 2px; }
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .cover-controls:not(.has-lens) { background: rgba(244, 251, 251, 0.18); }
+}
+
+.cover-controls button {
+  display: grid;
+  place-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 0 0 var(--glass-step);
+  width: var(--glass-step);
+  height: var(--glass-step);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.cover-controls button:hover { color: #087a71; transform: scale(1.08); }
+.cover-controls button:active { transform: scale(0.92); }
+.cover-controls button[aria-pressed="true"] { color: #087a71; }
+.cover-controls button[data-slide]::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.cover-controls svg { width: 10px; height: 10px; }
+.cover-toggle[data-paused="true"] .icon-pause,
+.cover-toggle[data-paused="false"] .icon-play { display: none; }
+.cover-carousel :focus-visible { outline-offset: -2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cover-frame.is-active { animation: none; }
+  .cover-controls::before, .cover-controls button { transition: none; }
+}
+
+/* Trim the blank margins in the 720 × 394 TactiDex figure before rounding it. */
+.pub-media.tactidex-figure {
+  aspect-ratio: auto;
+  min-height: 0;
+}
+
+.tactidex-crop {
+  position: relative;
+  display: block;
+  aspect-ratio: 693 / 374;
+  overflow: hidden;
+  border-radius: calc(var(--media-radius) - 1px);
+}
+
+.tactidex-crop img {
+  position: absolute;
+  left: calc(-100% * 14 / 693);
+  top: calc(-100% * 8 / 374);
+  width: calc(100% * 720 / 693);
+  height: calc(100% * 394 / 374);
+  max-width: none;
+  border-radius: 0;
+}
+
+.grid-video .tactidex-crop {
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+.grid-video .tactidex-crop img {
+  object-fit: cover;
+}
+
+.pub-media :is(button[data-video-src], video) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.pub-media button[data-video-src] {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pub-media :is(button, video):focus-visible { outline-offset: -4px; }
+
+.video-label,
+.video-status:not(:empty) {
+  position: absolute;
+  inset: auto 8px 8px auto;
+  padding: 4px 9px;
+  border-radius: 4px;
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: var(--fs-sm);
+}
+
+.video-status:not(:empty) {
+  inset: 8px auto auto 8px;
+  margin: 0;
+  pointer-events: none;
+}

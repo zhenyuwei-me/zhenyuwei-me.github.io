@@ -1,0 +1,1649 @@
+/* Reference layout and color themes. */
+
+:root {
+  --bg: #0b0e14;
+  --bg-elevated: #11151f;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --text: #e8eaf0;
+  --text-secondary: #a8b0c0;
+  --text-tertiary: #6b7385;
+  --accent: #5eead4;          /* teal */
+  --accent-dim: rgba(94, 234, 212, 0.12);
+  /* Links sit in the accent's own hue family, a step down in saturation so
+     body links read as interactive without competing with the accent marks.
+     They used to be sky blue at 199deg against a 171deg accent — 28deg apart,
+     close enough to look like one idea and far enough to fight. */
+  --link: #8fded0;
+  /* Affiliation colours. People take the colour of the institution they are
+     at, so a name and its lab read as one thing — the convention haoruxue and
+     geng-haoran both use. These are chromatic marks, not the site accent:
+     teal stays the site's own voice, in the nav marks and section ticks. */
+  --aff-berkeley: #8ec8ff;
+  /* Amazon's own #ff9900 carries the dark ground at 9.0:1, but only manages
+     2.0:1 on the light one — far under AA — so light runs the same hue
+     darkened to 4.9:1 rather than the literal brand value. */
+  --aff-amazon: #ff9900;
+  /* Venue marks, same idea. Each brand value clears AA on one ground only —
+     CoRL's #b35a1f is 4.0:1 on dark, Science's #d0021b is 3.3:1 — so each
+     theme carries its own step along the same hue. */
+  --venue-corl: #d98038;
+  --venue-scirobotics: #f9584f;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Space Grotesk", var(--font-sans);
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  --maxw: 880px;
+  --radius: 16px;
+  /* Type scale. The stylesheet had grown 23 distinct font sizes, many of them
+     1-2% apart — differences too small to register as hierarchy but big enough
+     that nothing quite lines up. Seven steps, each a real one. */
+  --fs-3xl: 1.5rem;
+  --fs-2xl: 1.15rem;
+  --fs-xl: 1.02rem;
+  --fs-lg: 0.95rem;
+  --fs-md: 0.9rem;
+  --fs-ms: 0.85rem;   /* half-step: md to sm is the scale's widest gap */
+  --fs-sm: 0.8rem;
+  --fs-xs: 0.75rem;
+  /* Control sizes. The small controls had drifted to six different heights
+     (36/32/30/26/24) and two radii, so a row of them never sat on one line. */
+  --ctl-h: 34px;      /* email, socials, theme toggle */
+  --ctl-h-sm: 26px;   /* tags, badges, filters */
+  /* Resting elevation. Large radius, very low opacity: the point is a soft
+     lift off the page, not a visible drop shadow. On the dark ground a black
+     shadow has to work harder, hence the higher alpha here than in light. */
+  --elev-1: 0 1px 2px rgba(0, 0, 0, 0.28), 0 10px 30px rgba(0, 0, 0, 0.34);
+  --elev-2: 0 2px 6px rgba(0, 0, 0, 0.32), 0 20px 56px rgba(0, 0, 0, 0.42);
+}
+
+:root[data-theme="light"] {
+  /* The ground was pure neutral grey while every text tone was cool at ~224deg.
+     Tint it to match, so the light theme is as considered as the dark one. */
+  --bg: #f7f8fa;
+  --bg-elevated: #ffffff;
+  --border: rgba(15, 23, 42, 0.08);
+  --border-strong: rgba(15, 23, 42, 0.16);
+  --text: #171b26;
+  --text-secondary: #4b5265;
+  --text-tertiary: #8a91a3;
+  /* #0d9488 only reached 3.5:1 on the light ground, short of AA for the
+     tagline and the active nav item. #0c7d74 clears it at 4.7:1; the link a
+     step darker again so the two stay distinguishable. */
+  --accent: #0c7d74;
+  --accent-dim: rgba(12, 125, 116, 0.09);
+  --link: #0a5f59;
+  --aff-berkeley: #0b5cad;
+  --aff-amazon: #9a5f00;
+  --venue-corl: #b35a1f;
+  --venue-scirobotics: #d0021b;
+  --elev-1: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 26px rgba(15, 23, 42, 0.06);
+  --elev-2: 0 2px 6px rgba(15, 23, 42, 0.05), 0 20px 56px rgba(15, 23, 42, 0.09);
+}
+
+* { box-sizing: border-box; }
+
+/* Buttons do not inherit the page font. Two rules set `font: inherit` locally;
+   the rest were falling back to the browser default. */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* The site defined no focus styling, leaving keyboard users on the browser
+   default over custom-coloured surfaces. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 84px;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Subtle tech grid backdrop. This replaced an interactive dot field driven by
+   the pointer; that effect had to be masked away from the 880px reading column
+   and switched off below 1100px to keep text legible, which left it visible
+   only in two narrow gutters — not worth 140 lines of canvas code. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 0%, transparent 72%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 0%, transparent 72%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a:hover { color: var(--accent); }
+
+::selection {
+  background: var(--accent);
+  color: #06251f;
+}
+
+:root[data-theme="light"] ::selection {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+/* ============================== Nav ============================== */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  background: color-mix(in srgb, var(--bg) 76%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+
+/* A hairline of accent bleeding out from the left edge, rather than a flat
+   rule all the way across. */
+.nav::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--accent) 55%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 12%, transparent) 22%,
+    transparent 46%);
+  pointer-events: none;
+}
+
+.nav-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-name {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-xl);
+  letter-spacing: -0.01em;
+  color: var(--text);
+  padding-left: 16px;
+}
+
+.nav-name::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0.95em;
+  border-radius: 1px;
+  background: var(--accent);
+}
+
+.nav-name:hover { color: var(--accent); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Sentence case at full size. These were briefly set as uppercase 0.72rem
+   micro-labels, which cost real legibility: uppercase strips the ascender and
+   descender shapes the eye reads words by, and this is primary navigation, not
+   a caption. The underline below marks the active page, so the tech read comes
+   from structure rather than from shrinking the type. */
+.nav-links a {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  padding: 6px 0;
+  transition: color 0.15s ease;
+}
+
+/* Underline grows from the centre on hover and stays put on the current page,
+   so the active item is marked structurally and not by colour alone. */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  transform: scaleX(0);
+  transition: transform 0.18s ease;
+}
+
+.nav-links a:hover { color: var(--accent); }
+.nav-links a:hover::after { transform: scaleX(1); }
+.nav-links a.active { color: var(--accent); }
+.nav-links a.active::after { transform: scaleX(1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-links a::after { transition: none; }
+}
+
+.nav-links a.active { color: var(--accent); }
+
+#theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ctl-h);
+  height: var(--ctl-h);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+#theme-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+#theme-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* show the icon of the mode you'd switch TO */
+:root[data-theme="dark"] .icon-moon { display: none; }
+:root[data-theme="light"] .icon-sun { display: none; }
+
+/* ============================== Layout ============================== */
+
+main {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 24px 48px;
+}
+
+section { margin-top: 56px; }
+
+h2 {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: var(--fs-3xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-left: 16px;
+}
+
+/* Accent tick in the margin, echoing the mark beside the name in the nav. */
+h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0.78em;
+  border-radius: 1px;
+  background: var(--accent);
+}
+
+/* trailing rule after section titles, tipped with accent at the join */
+h2::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--accent) 45%, transparent) 0%,
+    var(--border-strong) 12%,
+    transparent 100%);
+}
+
+/* ============================== Hero ============================== */
+
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 36px;
+  align-items: start;
+  padding-top: 20px;
+}
+
+/* soft accent glow behind the hero to anchor the eye */
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(920px, 120vw);
+  height: 520px;
+  background: radial-gradient(ellipse 60% 55% at 50% 30%,
+    color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+:root[data-theme="light"] .hero::before {
+  background: radial-gradient(ellipse 60% 55% at 50% 30%,
+    color-mix(in srgb, var(--accent) 6%, transparent), transparent 70%);
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 4.4vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.name-zh {
+  font-weight: 500;
+  font-size: 0.62em;
+  color: var(--text-secondary);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.hero-tagline {
+  margin: 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tagline-primary {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.tagline-secondary {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+
+.hero-bio {
+  margin-top: 24px;
+  color: var(--text-secondary);
+  font-size: var(--fs-md);
+  line-height: 1.6;
+}
+
+/* `balance`, not `pretty`. Measured at the 576px column, `pretty` left two of
+   the three paragraphs as a long line plus a stub — 530/168px and 400/232px —
+   so "and dexterous manipulation." and "and Shankar Sastry." each hung alone
+   beneath a full line, stranding an "and" at the left edge twice. `balance`
+   evens them to 371/327 and 323/309.
+
+   It was tried and rejected here once for splitting names mid-phrase, but the
+   names are nowrap below and the copy has changed since: forcing nowrap on the
+   bold phrases as well now yields an identical layout, so nothing is breaking.
+
+   The 16px margin puts the paragraph gap at ~1.6x the gap between lines inside
+   a paragraph, far enough apart for the eye to find the breaks. */
+.hero-bio p {
+  margin: 0 0 16px;
+  text-wrap: pretty;
+}
+
+/* A person's name should never break across lines. */
+.hero-bio a {
+  white-space: nowrap;
+}
+
+/* An affiliation and the people at it share one colour, set by the modifier
+   class so more institutions can be added without touching this rule. Bright
+   enough to read as a mark rather than as body text: 6.3:1 on the light ground
+   and 10.9:1 on dark, both well clear of AA. */
+.aff {
+  color: var(--aff);
+}
+
+.aff-berkeley {
+  --aff: var(--aff-berkeley);
+}
+
+.aff-amazon {
+  --aff: var(--aff-amazon);
+}
+
+/* Collaborators rank one below the advisors, in size and tone together. The
+   size is the half-step at 0.85rem — --fs-sm proved too small a drop, and it
+   is no finer than the 0.95/0.90 and 0.80/0.75 pairs already in the scale.
+   Tone is mixed 30% toward tertiary: 7.2:1 on dark, 5.5:1 on light, both AA. */
+.hero-collab {
+  font-size: var(--fs-ms);
+  color: color-mix(in srgb, var(--text-secondary) 70%, var(--text-tertiary));
+}
+.hero-bio p:last-child { margin-bottom: 0; }
+
+.hero-bio strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.hero-actions {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.email {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--ctl-h);
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.email svg {
+  width: 15px;
+  height: 15px;
+}
+
+.email:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.socials {
+  display: flex;
+  gap: 8px;
+}
+
+.socials a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ctl-h);
+  height: var(--ctl-h);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.socials a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.socials svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* keep the photo's natural aspect ratio (no zoomed-in crop) and center it
+   against the text column. a small matte inside the frame makes the subject
+   read a touch smaller without changing the overall photo size. */
+.hero-photo {
+  position: relative;
+  align-self: start;
+  /* even matte all around; the inset makes the subject read a touch smaller */
+  padding: 5.5%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--elev-1);
+  overflow: hidden;
+}
+
+/* the image drives the height (width × aspect-ratio); the container just wraps
+   it with padding. this avoids the Safari bug where an aspect-ratio container
+   plus a height:100% child lets the image overflow the frame. So the ratio is
+   picked to land the frame near the bio column's own height rather than
+   stretched to it: 5:8 lands the bottom edge just above the email row.
+   Against the file's own 0.875 that crops ~14% off each side, which the
+   centred subject can spare. */
+.hero-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 5 / 8;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: calc(var(--radius) - 5px);
+  /* tone down the green backdrop so it sits well with the teal/dark palette */
+  filter: saturate(0.78) contrast(1.02);
+}
+
+:root[data-theme="dark"] .hero-photo img {
+  filter: saturate(0.7) brightness(0.93) contrast(1.04);
+}
+
+/* corner accent brackets on the photo */
+.hero-photo::before,
+.hero-photo::after {
+  content: "";
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 2px solid color-mix(in srgb, var(--accent) 80%, transparent);
+  pointer-events: none;
+}
+
+:root[data-theme="light"] .hero-photo::before,
+:root[data-theme="light"] .hero-photo::after {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.hero-photo::before {
+  top: -8px;
+  left: -8px;
+  border-right: none;
+  border-bottom: none;
+  border-top-left-radius: 6px;
+}
+
+.hero-photo::after {
+  bottom: -8px;
+  right: -8px;
+  border-left: none;
+  border-top: none;
+  border-bottom-right-radius: 6px;
+}
+
+/* ============================== Recent updates (band) ============================== */
+
+/* A full-width row of its own between the hero and Research. The 220px hero
+   rail could not carry these items — several run past 70 characters and broke
+   to four lines each — so they get the whole 832px column and one line apiece. */
+.news-band {
+  margin-top: 18px;
+}
+
+/* the band belongs to the hero, so Research follows it closer than the 56px
+   every other section gets. */
+.news-band + section {
+  margin-top: 14px;
+}
+
+.news-band-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.news-band-title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+}
+
+/* same tipped rule the section headings use, so the band reads as a peer of
+   Research rather than as a stray widget. */
+.news-band-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--accent) 45%, transparent) 0%,
+    var(--border-strong) 12%,
+    transparent 100%);
+}
+
+/* Separators as top borders, not bottom ones. `.news-list li:last-child` only
+   clears the rule on the true last child — which is a collapsed item — so the
+   bottom-border version left a rule dangling under the last visible row. */
+.news-band .news-list li {
+  gap: 20px;
+  padding: 5px 0;
+  border-bottom: none;
+}
+
+.news-band .news-list li + li {
+  border-top: 1px solid var(--border);
+}
+
+/* body 0.9rem at 1.5 gives a 21.6px line box; 21.6/12.8 = 1.69 puts the
+   smaller date in a box of exactly the same height, so the two columns share a
+   baseline without the nudge `.news-date` uses elsewhere. */
+.news-band .news-date {
+  flex: 0 0 88px;
+  line-height: 1.69;
+  padding-top: 0;
+  /* "2026 · Sep" measures ~79px in the mono face, so a narrower column broke
+     the year off onto its own line and doubled every row's height. nowrap
+     keeps it one line even if the webfont falls back to wider metrics. */
+  white-space: nowrap;
+}
+
+/* `.news-list li` sets display:flex at 0-1-1, which beats the UA sheet's
+   `[hidden] { display: none }` at 0-1-0 — without this the collapsed items
+   stay on screen and the toggle looks broken. */
+.news-band .news-list li[hidden] {
+  display: none;
+}
+
+.news-band .news-body {
+  font-size: var(--fs-md);
+  line-height: 1.5;
+}
+
+.news-more {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.02em;
+  color: var(--text-tertiary);
+  transition: color 0.15s ease;
+}
+
+.news-more svg {
+  width: 11px;
+  height: 11px;
+  transition: transform 0.2s ease;
+}
+
+.news-more:hover { color: var(--accent); }
+
+.news-more[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .news-more svg { transition: none; }
+}
+
+/* ============================== News ============================== */
+
+.news-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.news-list li {
+  display: flex;
+  gap: 24px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.news-list li:last-child { border-bottom: none; }
+
+.news-date {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
+  flex: 0 0 90px;
+  padding-top: 2px;
+  letter-spacing: 0.02em;
+}
+
+.news-body {
+  font-size: var(--fs-lg);
+  color: var(--text-secondary);
+}
+
+/* No resting underline: at this size the rules cut through the descenders and
+   the rows already carry two other line weights (the separators and the head
+   rule). Weight plus the full-strength text colour marks the link against the
+   secondary body, and the underline comes back on hover. */
+.news-body a {
+  color: var(--text);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.news-body a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 2px;
+}
+
+/* Same for an affiliation mark: `.news-body a` and its :hover both sit at
+   0-2-1, so keeping the colour takes a rule at that weight and one above it. */
+.news-body a.aff,
+.news-body a.aff:hover {
+  color: var(--aff);
+}
+
+.news-body a.aff:hover {
+  text-decoration-color: currentColor;
+}
+
+/* A venue mark works the way .aff does — the modifier class sets the
+   variable, so a new venue is one line in each theme and one modifier, with
+   no new rule here. It keeps its colour on hover; turning teal would read as
+   a different link. */
+.news-body a.venue,
+.news-body a.venue:hover {
+  color: var(--venue, var(--text));
+}
+
+.news-body a.venue:hover {
+  text-decoration-color: currentColor;
+}
+
+.venue {
+  white-space: nowrap;
+}
+
+.venue-corl { --venue: var(--venue-corl); }
+
+/* Science Robotics sets its wordmark two-tone — "Science" in the journal red,
+   "Robotics" in plain text — so it colours an inner span instead of setting
+   --venue, and the link falls back to the body text colour around it. */
+.venue-scirobotics {
+  color: var(--venue-scirobotics);
+}
+
+/* ============================== Awards ============================== */
+
+.awards-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.awards-list li {
+  display: flex;
+  gap: 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.awards-list li:last-child { border-bottom: none; }
+
+.award-year {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
+  flex: 0 0 44px;
+  padding-top: 3px;
+}
+
+.award-title {
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  color: var(--text);
+}
+
+.award-links {
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.award-links a {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--link);
+}
+
+.award-links a::before {
+  content: "▸ ";
+  color: var(--text-tertiary);
+}
+
+.award-links a:hover { color: var(--accent); }
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  padding: 1px 7px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-radius: 999px;
+  vertical-align: 1px;
+  white-space: nowrap;
+}
+
+.badge::before {
+  content: "· ";
+  color: var(--text-tertiary);
+}
+
+/* ============================== Research ============================== */
+
+.research-subtitle {
+  margin: -12px 0 16px;
+  font-size: var(--fs-lg);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Grid of highlight videos shown before the reader expands the full list. */
+#research-grid-view {
+  transition: opacity 0.24s ease-in-out;
+}
+
+#research-grid-view.collapsed-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.grid-videos {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin: 8px 0 12px;
+}
+
+.grid-video {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: var(--elev-1);
+  background: color-mix(in srgb, var(--bg-elevated) 60%, #000);
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.grid-video img,
+.grid-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* YouTube iframe embed for tiles that don't have a local mp4.
+   Zoom the iframe so the video fills the square and hides YouTube chrome. */
+.grid-video-yt {
+  position: relative;
+}
+
+.grid-video-yt iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* Scale iframe up so the 16:9 video fills the 1:1 tile with no black bars */
+  width: 200%;
+  height: 200%;
+  transform: translate(-50%, -50%);
+  border: 0;
+  pointer-events: none;   /* let clicks fall through to the <a> */
+}
+
+.grid-video:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  transform: translateY(-2px);
+}
+
+/* Dim non-hovered thumbnails when hovering over the grid — Will Liang trick. */
+.grid-videos:has(.grid-video:hover) .grid-video:not(:hover) {
+  opacity: 0.55;
+}
+
+.scroll-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 0 auto 20px;
+  padding: 2px 12px 6px;
+  background: transparent;
+  border: 0;
+  color: var(--text-tertiary);
+  font: inherit;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.scroll-toggle:hover {
+  color: var(--accent);
+}
+
+.scroll-toggle svg {
+  width: 16px;
+  height: 16px;
+  animation: nudge 1.8s ease-in-out infinite;
+}
+
+@keyframes nudge {
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50%      { transform: translateY(4px); opacity: 1; }
+}
+
+@media (max-width: 720px) {
+  .grid-videos {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-toggle svg { animation: none; }
+}
+
+/* ============================== Background (vertical timeline) ============================== */
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  /* The date column has to fit the longest range on one line
+     ("Oct 2025 - Aug 2026"); the rail sits a fixed 12px into the gap. */
+  --date-col: 152px;
+  --rail-x: calc(var(--date-col) + 12px);
+}
+
+/* The vertical rail sits between the date column and the body column. */
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: var(--rail-x);
+  width: 2px;
+  background: linear-gradient(to bottom,
+    var(--border) 0%,
+    var(--border-strong) 12%,
+    var(--border-strong) 88%,
+    var(--border) 100%);
+}
+
+.timeline-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--date-col) 1fr;
+  gap: 32px;
+  padding: 6px 0 24px;
+}
+
+.timeline-item:last-child { padding-bottom: 0; }
+
+.timeline-marker {
+  position: absolute;
+  left: calc(var(--rail-x) - 5px);   /* 12px dot centred on the 2px rail */
+  top: 12px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 3px var(--bg);
+  transition: background 0.2s ease;
+}
+
+.timeline-item:hover .timeline-marker {
+  background: var(--accent);
+}
+
+.timeline-date {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
+  padding-top: 10px;
+  text-align: right;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.timeline-body {
+  padding-top: 6px;
+}
+
+.timeline-role {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.005em;
+}
+
+.timeline-role a {
+  color: inherit;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.timeline-role a:hover {
+  color: var(--accent);
+  border-bottom-color: currentColor;
+}
+
+.timeline-title {
+  font-size: var(--fs-md);
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.timeline-meta {
+  margin-top: 6px;
+  font-size: var(--fs-md);
+  color: var(--text-tertiary);
+  line-height: 1.6;
+}
+
+.timeline-meta a { color: var(--link); }
+.timeline-meta a:hover { color: var(--accent); }
+
+@media (max-width: 640px) {
+  .timeline::before { left: 10px; }
+  .timeline-item {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding-left: 30px;
+  }
+  .timeline-marker { left: 4px; top: 8px; }
+  .timeline-date { text-align: left; padding-top: 0; white-space: normal; }
+}
+
+/* ============================== Publications ============================== */
+
+.pub-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Two-column grid used under the VLK flagship, so supporting projects
+   read as a set of examples rather than a linear list of papers. */
+.pub-list-2col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.pub-list-2col .pub {
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 16px;
+}
+
+.pub-list-2col .pub-media {
+  aspect-ratio: 16 / 9;
+}
+
+@media (max-width: 720px) {
+  .pub-list-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.pub {
+  display: grid;
+  grid-template-columns: 252px 1fr;
+  gap: 24px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--elev-1);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pub:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  transform: translateY(-3px);
+  box-shadow:
+    var(--elev-2),
+    0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent),
+    0 4px 24px color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+:root[data-theme="light"] .pub:hover {
+  box-shadow:
+    var(--elev-2),
+    0 4px 24px color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+/* Flagship card: without this the lead project inherits the 252px thumbnail
+   and ends up the smallest research card on the page, below a two-column grid
+   whose media runs ~403px. Widen its media to match that grid and let the
+   full-width card and larger title carry the ranking, rather than sheer size —
+   this also keeps the 720px source downscaling, so it stays sharp. */
+.pub-flagship {
+  grid-template-columns: 400px 1fr;
+}
+
+.pub-flagship .pub-title {
+  font-size: var(--fs-2xl);
+}
+
+@media (max-width: 760px) {
+  .pub-flagship .pub-title { font-size: var(--fs-xl); }
+}
+
+.pub-media {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-elevated) 60%, #000);
+  align-self: center;
+}
+
+.pub-media img,
+.pub-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.pub-media:hover img,
+.pub-media:hover video {
+  transform: scale(1.04);
+}
+
+.pub-media iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.pub-media.playing { cursor: default; }
+
+/* Some teasers are figures or posters lifted from the paper rather than robot
+   footage. Cropping those to 16:9 slices labels off mid-word, so fit the whole
+   figure instead and give it a light matte to sit on. In dark mode the matte
+   and figure are dimmed together — a white block is otherwise the brightest
+   thing on the page. */
+.pub-media-figure {
+  background: #f1f2f5;
+}
+
+.pub-media-figure img {
+  object-fit: contain;
+}
+
+:root[data-theme="dark"] .pub-media-figure {
+  background: #cfd2d9;
+  filter: brightness(0.82) saturate(0.9);
+}
+
+/* The zoom-on-hover reads as a crop on a contained figure, so drop it. */
+.pub-media-figure:hover img {
+  transform: none;
+}
+
+.play-badge {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.62);
+  color: #fff;
+  backdrop-filter: blur(4px);
+}
+
+.play-badge svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pub-info { min-width: 0; }
+
+.pub-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+.pub-title a { color: var(--text); }
+.pub-title a:hover { color: var(--accent); }
+
+/* Unified pill tags: Project co-lead + TL;DR button.
+   Same size and treatment so they read as a matched pair under the title. */
+.pub-tags {
+  margin: 10px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  position: relative;
+}
+
+.pub-tag {
+  display: inline-flex;
+  align-items: center;
+  height: var(--ctl-h-sm);
+  padding: 0 10px;
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: default;
+  user-select: none;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.pub-tag-tldr {
+  color: var(--text-secondary);
+  background: transparent;
+  border-color: var(--border);
+  cursor: pointer;
+}
+
+.pub-tag-tldr:hover,
+.pub-tag-tldr[aria-expanded="true"] {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+/* TL;DR popover — anchored to the pub-tags container, doesn't push layout */
+.pub-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 15;
+  min-width: 260px;
+  max-width: min(420px, 92vw);
+  padding: 12px 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.28),
+    0 0 0 1px color-mix(in srgb, var(--accent) 8%, transparent);
+  font-size: var(--fs-md);
+  line-height: 1.55;
+  color: var(--text);
+  animation: pub-pop 0.18s ease-out;
+}
+
+:root[data-theme="light"] .pub-popover {
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.04);
+}
+
+@keyframes pub-pop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pub-popover { animation: none; }
+}
+
+.pub-authors {
+  margin: 7px 0 0;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.pub-authors strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Keep coauthor links quiet inline; reveal on hover so the row stays readable.
+   The rule said that already but underlined every name at rest, which on a
+   twelve-author paper drew twelve lines through four lines of text. In a list
+   where nearly every name is a link, the underline stops distinguishing
+   anything and is only texture — so it moves to hover, where it still answers
+   "is this one clickable". */
+.pub-authors a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 2px;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.pub-authors a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+.pub-venue {
+  margin: 5px 0 0;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.pub-venue .badge { margin-left: 6px; }
+
+/* GitHub star counts live in the links row, not mid-sentence in the venue —
+   inline they broke the venue across lines and wrapped unpredictably. */
+.badge-link {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.badge-link img {
+  display: block;
+  height: 17px;
+}
+
+.pub-links {
+  margin: 10px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+/* Keep the star badges together as one group at the far end of the links row,
+   so a card with two of them wraps them as a pair rather than stranding the
+   second one alone on the next line. */
+.pub-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+@media (max-width: 760px) {
+  .pub-badges { margin-left: 0; }
+}
+
+.pub-links a {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--link);
+}
+
+.pub-links a::before {
+  content: "▸ ";
+  color: var(--text-tertiary);
+}
+
+/* Star badges are images, not text links — no marker, no link colour. */
+.pub-links .badge-link::before { content: none; }
+
+.pub-links a:hover { color: var(--accent); }
+
+.pub-note {
+  margin: 3px 0 0;
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+}
+
+/* ============================== Publications page ============================== */
+
+.pub-page-header {
+  padding-top: 64px;
+  margin-bottom: 44px;
+}
+
+.pub-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.pub-filter {
+  display: inline-flex;
+  align-items: center;
+  height: var(--ctl-h-sm);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.02em;
+  color: var(--text-tertiary);
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.pub-filter:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.pub-filter.active {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+/* When a filter hides pubs, also collapse the section heading if the
+   entire section has no visible pubs. */
+.pub[data-topics].hidden { display: none; }
+
+.pub-page-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.5vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.pub-page-header p {
+  margin: 16px 0 0;
+  color: var(--text-secondary);
+  font-size: var(--fs-lg);
+  max-width: 62ch;
+}
+
+.pub-see-all {
+  margin: 32px 0 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+}
+
+.pub-see-all a {
+  color: var(--accent);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  padding-bottom: 2px;
+  transition: border-color 0.15s ease;
+}
+
+.pub-see-all a:hover {
+  border-color: var(--accent);
+}
+
+/* ============================== Footer ============================== */
+
+.footer {
+  margin-top: 84px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 4px 24px;
+  align-items: end;
+}
+
+.footer p { margin: 0; }
+
+/* Personal signature — spans both columns, a touch larger, italic. */
+.footer-signature {
+  grid-column: 1 / -1;
+  margin-bottom: 12px !important;
+  font-family: var(--font-sans);
+  font-size: var(--fs-md);
+  font-style: italic;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 68ch;
+}
+
+/* barely-there; reveals "built with" on hover or tap */
+.footer-fox {
+  font-size: var(--fs-xs);
+  opacity: 0.25;
+  filter: grayscale(0.6);
+  transition: opacity 0.25s ease, filter 0.25s ease;
+  cursor: default;
+  user-select: none;
+}
+
+.footer-fox .fox-text {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.footer-fox:hover,
+.footer-fox.revealed {
+  opacity: 1;
+  filter: none;
+}
+
+.footer-fox:hover .fox-text,
+.footer-fox.revealed .fox-text {
+  opacity: 1;
+}
+
+/* ============================== Reveal animation ============================== */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .pub, .socials a { transition: none; }
+}
+
+/* ============================== Responsive ============================== */
+
+@media (max-width: 760px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-top: 44px;
+  }
+
+  .hero-photo {
+    order: -1;
+    max-width: 200px;
+  }
+
+  .nav-inner { padding: 0 16px; }
+
+  .nav-name { font-size: var(--fs-md); }
+
+  .nav-links { gap: 12px; }
+
+  .nav-links a { font-size: var(--fs-xs); }
+
+  .pub {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .pub-media {
+    align-self: stretch;
+    width: 100%;
+  }
+
+  /* iOS Safari doesn't always compute aspect-ratio on <img>-only .pub-media
+     inside a grid item. Force an explicit height fallback. */
+  .pub-list-2col .pub-media,
+  .pub-media {
+    aspect-ratio: 16 / 9;
+    min-height: 180px;
+  }
+
+  section { margin-top: 56px; }
+
+  .research-subtitle { font-size: var(--fs-md); }
+
+  .grid-videos { gap: 6px; }
+}
+
+@media (max-width: 420px) {
+  .nav-name { font-size: var(--fs-sm); }
+  .nav-links { gap: 10px; }
+  .nav-links a { font-size: var(--fs-xs); }
+}
