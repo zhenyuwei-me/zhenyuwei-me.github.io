@@ -185,7 +185,7 @@ for (const carousel of document.querySelectorAll(".cover-carousel")) {
   function schedule() {
     window.clearTimeout(timer);
     if (visible && !document.hidden && !paused && !hovered && !focused) {
-      timer = window.setTimeout(() => select((requested + 1) % coverScenes.length), 4000);
+      timer = window.setTimeout(() => select((requested + 1) % coverScenes.length), 2500);
     }
   }
 
