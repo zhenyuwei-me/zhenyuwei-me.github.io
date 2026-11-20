@@ -132,7 +132,7 @@
   width: var(--glass-step);
   height: var(--glass-step);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.17);
+  background: rgba(15, 30, 35, 0.16);
   transform: translateX(calc(var(--active-slide, 0) * var(--glass-step)));
   transition: transform 0.4s cubic-bezier(0.2, 1.35, 0.45, 1);
   pointer-events: none;
