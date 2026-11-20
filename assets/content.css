@@ -49,6 +49,11 @@
   font-family: "Google Sans Flex", var(--font-display);
 }
 
+.pub-venue .pub-highlight {
+  color: var(--accent);
+  font-weight: 700;
+}
+
 .pub-media { --media-radius: 8px; }
 .grid-video { --media-radius: 10px; }
 
