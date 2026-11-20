@@ -326,18 +326,24 @@ if (researchToggle) {
   const grid = document.querySelector("#research-grid-view");
   const list = document.querySelector("#research-list-view");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  let previousY = window.scrollY;
+  const visualViewport = window.visualViewport;
+  const viewportTop = () => window.scrollY + (visualViewport?.offsetTop || 0);
+  const viewportHeight = () => visualViewport?.height || innerHeight;
+  let previousY = viewportTop();
+  let previousScale = visualViewport?.scale || 1;
+  let activeTouches = 0;
   let touchStart;
 
   function toggleInView(fraction = 1) {
     const { top, bottom } = researchToggle.getBoundingClientRect();
-    return bottom > 0 && top < innerHeight * fraction;
+    const offset = visualViewport?.offsetTop || 0;
+    return bottom > offset && top < offset + viewportHeight() * fraction;
   }
 
   // A short page (or the bottom of a page) cannot emit another downward scroll.
   function atScrollEnd() {
     const scroller = document.scrollingElement;
-    return scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop <= 1;
+    return scroller.scrollHeight - viewportTop() - viewportHeight() <= 1;
   }
 
   function expandAtBoundary() {
@@ -353,6 +359,8 @@ if (researchToggle) {
     window.removeEventListener("keydown", expandOnKey);
     window.removeEventListener("touchstart", rememberTouch);
     window.removeEventListener("touchend", expandOnSwipe);
+    window.removeEventListener("touchcancel", cancelTouch);
+    visualViewport?.removeEventListener("scroll", expandOnScroll);
 
     function showList() {
       const moveFocus = grid.contains(document.activeElement);
@@ -370,10 +378,13 @@ if (researchToggle) {
   }
 
   function expandOnScroll() {
-    const currentY = window.scrollY;
+    const currentY = viewportTop();
+    const currentScale = visualViewport?.scale || 1;
+    const zooming = Math.abs(currentScale - previousScale) > 0.001 || activeTouches > 1;
     const movingDown = currentY > previousY;
     previousY = currentY;
-    if (!movingDown) return;
+    previousScale = currentScale;
+    if (!movingDown || zooming) return;
     if (toggleInView(0.8)) expand();
   }
 
@@ -390,11 +401,13 @@ if (researchToggle) {
   }
 
   function rememberTouch(event) {
-    touchStart = event.touches.length === 1 ? event.touches[0] : null;
+    activeTouches = event.touches.length;
+    touchStart = activeTouches === 1 ? event.touches[0] : null;
   }
 
   function expandOnSwipe(event) {
     const start = touchStart;
+    activeTouches = event.touches.length;
     touchStart = null;
     if (!start || event.defaultPrevented || event.touches.length) return;
     const end = Array.from(event.changedTouches).find(touch => touch.identifier === start.identifier);
@@ -403,12 +416,19 @@ if (researchToggle) {
     if (down >= 24 && down > Math.abs(start.clientX - end.clientX)) expandAtBoundary();
   }
 
+  function cancelTouch() {
+    activeTouches = 0;
+    touchStart = null;
+  }
+
   researchToggle.addEventListener("click", expand);
   window.addEventListener("scroll", expandOnScroll, { passive: true });
   window.addEventListener("wheel", expandOnWheel, { passive: true });
   window.addEventListener("keydown", expandOnKey);
   window.addEventListener("touchstart", rememberTouch, { passive: true });
   window.addEventListener("touchend", expandOnSwipe, { passive: true });
+  window.addEventListener("touchcancel", cancelTouch, { passive: true });
+  visualViewport?.addEventListener("scroll", expandOnScroll, { passive: true });
 }
 
 for (const button of document.querySelectorAll(".pub-tag-tldr[aria-controls]")) {
