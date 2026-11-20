@@ -54,6 +54,11 @@
   font-weight: 700;
 }
 
+.pub-links a[aria-disabled="true"] {
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+}
+
 .pub-media { --media-radius: 8px; }
 .grid-video { --media-radius: 10px; }
 
