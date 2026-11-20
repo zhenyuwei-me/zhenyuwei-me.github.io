@@ -327,12 +327,32 @@ if (researchToggle) {
   const list = document.querySelector("#research-list-view");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   let previousY = window.scrollY;
+  let touchStart;
+
+  function toggleInView(fraction = 1) {
+    const { top, bottom } = researchToggle.getBoundingClientRect();
+    return bottom > 0 && top < innerHeight * fraction;
+  }
+
+  // A short page (or the bottom of a page) cannot emit another downward scroll.
+  function atScrollEnd() {
+    const scroller = document.scrollingElement;
+    return scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop <= 1;
+  }
+
+  function expandAtBoundary() {
+    if (atScrollEnd() && toggleInView()) expand();
+  }
 
   // Fade the grid, then replace it in one update so both views never take up space together.
   function expand() {
     if (researchToggle.getAttribute("aria-expanded") === "true") return;
     researchToggle.setAttribute("aria-expanded", "true");
     window.removeEventListener("scroll", expandOnScroll);
+    window.removeEventListener("wheel", expandOnWheel);
+    window.removeEventListener("keydown", expandOnKey);
+    window.removeEventListener("touchstart", rememberTouch);
+    window.removeEventListener("touchend", expandOnSwipe);
 
     function showList() {
       const moveFocus = grid.contains(document.activeElement);
@@ -354,12 +374,41 @@ if (researchToggle) {
     const movingDown = currentY > previousY;
     previousY = currentY;
     if (!movingDown) return;
-    const { top, bottom } = researchToggle.getBoundingClientRect();
-    if (bottom > 0 && top < innerHeight * 0.8) expand();
+    if (toggleInView(0.8)) expand();
+  }
+
+  function expandOnWheel(event) {
+    if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (event.deltaY > 0 && event.deltaY > Math.abs(event.deltaX)) expandAtBoundary();
+  }
+
+  function expandOnKey(event) {
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (!["ArrowDown", "PageDown", "End", " "].includes(event.key)) return;
+    if (event.target instanceof Element && event.target.closest("input, textarea, select, button, [contenteditable]:not([contenteditable='false']), [role='textbox'], [role='dialog']")) return;
+    expandAtBoundary();
+  }
+
+  function rememberTouch(event) {
+    touchStart = event.touches.length === 1 ? event.touches[0] : null;
+  }
+
+  function expandOnSwipe(event) {
+    const start = touchStart;
+    touchStart = null;
+    if (!start || event.defaultPrevented || event.touches.length) return;
+    const end = Array.from(event.changedTouches).find(touch => touch.identifier === start.identifier);
+    if (!end) return;
+    const down = start.clientY - end.clientY;
+    if (down >= 24 && down > Math.abs(start.clientX - end.clientX)) expandAtBoundary();
   }
 
   researchToggle.addEventListener("click", expand);
   window.addEventListener("scroll", expandOnScroll, { passive: true });
+  window.addEventListener("wheel", expandOnWheel, { passive: true });
+  window.addEventListener("keydown", expandOnKey);
+  window.addEventListener("touchstart", rememberTouch, { passive: true });
+  window.addEventListener("touchend", expandOnSwipe, { passive: true });
 }
 
 for (const button of document.querySelectorAll(".pub-tag-tldr[aria-controls]")) {
