@@ -106,7 +106,7 @@ function makeGlassTexture(image, bounds) {
       const length = Math.hypot(dx, dy);
       const depth = radius - length;
       if (depth < 0) continue;
-      const bend = 4.4 * Math.pow(Math.max(0, 1 - depth / 9), 2);
+      const bend = 4 * Math.pow(Math.max(0, 1 - depth / 7.5), 2);
       const sx = Math.max(0, Math.min(source.width - 2, x + margin + (length ? dx / length : 0) * bend * ratio));
       const sy = Math.max(0, Math.min(source.height - 2, y + margin + (length ? dy / length : 0) * bend * ratio));
       const ix = Math.floor(sx), iy = Math.floor(sy);
