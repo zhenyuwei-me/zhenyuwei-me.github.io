@@ -221,6 +221,7 @@
 }
 
 .cover-controls svg { width: 10px; height: 10px; }
+.cover-controls .icon-play { transform: translateX(0.25px); }
 .cover-toggle[data-paused="true"] .icon-pause,
 .cover-toggle[data-paused="false"] .icon-play { display: none; }
 .cover-carousel :focus-visible { outline-offset: -2px; }

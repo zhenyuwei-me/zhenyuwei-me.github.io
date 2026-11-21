@@ -106,7 +106,7 @@ function makeGlassTexture(image, bounds) {
       const length = Math.hypot(dx, dy);
       const depth = radius - length;
       if (depth < 0) continue;
-      const bend = 4 * Math.pow(Math.max(0, 1 - depth / 7.5), 2);
+      const bend = 4.4 * Math.pow(Math.max(0, 1 - depth / 9), 2);
       const sx = Math.max(0, Math.min(source.width - 2, x + margin + (length ? dx / length : 0) * bend * ratio));
       const sy = Math.max(0, Math.min(source.height - 2, y + margin + (length ? dy / length : 0) * bend * ratio));
       const ix = Math.floor(sx), iy = Math.floor(sy);
@@ -671,4 +671,93 @@ for (const cover of document.querySelectorAll("button[data-video-src]")) {
     // The native controls remain available if the browser declines playback.
     video.play().catch(() => {});
   });
+}
+
+// A short, event-driven wheel easing tail. Touch, keyboard navigation and
+// nested scroll areas stay native; there is no animation loop while idle.
+{
+  const desktopPointer = matchMedia("(hover: hover) and (pointer: fine)");
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  let wheelFrame = 0;
+  let wheelTarget = scrollY;
+  let lastApplied = scrollY;
+  let lastTime = 0;
+  let direction = 0;
+
+  function stopWheelEasing() {
+    cancelAnimationFrame(wheelFrame);
+    wheelFrame = 0;
+    wheelTarget = lastApplied = scrollY;
+    direction = 0;
+  }
+
+  function hasNestedScroller(event) {
+    for (const node of event.composedPath()) {
+      if (node === document.body || node === document.documentElement) break;
+      if (!(node instanceof Element)) continue;
+      if (node.matches("input, textarea, select, [contenteditable]:not([contenteditable='false']), [role='textbox']")) return true;
+      if (node.scrollHeight > node.clientHeight + 1 && /^(auto|scroll|overlay)$/.test(getComputedStyle(node).overflowY)) return true;
+    }
+    return false;
+  }
+
+  function easeWheel(time) {
+    wheelFrame = 0;
+    if (!desktopPointer.matches || reducedMotion.matches || document.hidden || Math.abs(scrollY - lastApplied) > 2) {
+      stopWheelEasing();
+      return;
+    }
+    const maximum = Math.max(0, document.scrollingElement.scrollHeight - document.documentElement.clientHeight);
+    wheelTarget = Math.min(maximum, Math.max(0, wheelTarget));
+    const remaining = wheelTarget - scrollY;
+    const dt = Math.max(0, Math.min(64, time - lastTime));
+    lastTime = time;
+    // 28ms time constant: enough to soften wheel steps without a long coast.
+    const next = Math.abs(remaining) <= 1 ? wheelTarget : scrollY + remaining * (1 - Math.exp(-dt / 28));
+    scrollTo({ top: next, behavior: "instant" });
+    lastApplied = scrollY;
+    if (Math.abs(wheelTarget - lastApplied) > 1) {
+      wheelFrame = requestAnimationFrame(easeWheel);
+    } else {
+      scrollTo({ top: wheelTarget, behavior: "instant" });
+      stopWheelEasing();
+    }
+  }
+
+  // Register after the research expansion listener, so boundary gestures can
+  // still expand a page that initially has no scrollable space.
+  window.addEventListener("wheel", (event) => {
+    if (!desktopPointer.matches || reducedMotion.matches || document.hidden || event.defaultPrevented || !event.cancelable ||
+        event.ctrlKey || event.metaKey || event.altKey || event.shiftKey ||
+        !event.deltaY || Math.abs(event.deltaX) >= Math.abs(event.deltaY) || hasNestedScroller(event)) {
+      stopWheelEasing();
+      return;
+    }
+    const maximum = Math.max(0, document.scrollingElement.scrollHeight - document.documentElement.clientHeight);
+    const unit = event.deltaMode === 1 ? 16.67 : event.deltaMode === 2 ? document.documentElement.clientHeight : 1;
+    const delta = event.deltaY * unit;
+    const nextDirection = Math.sign(delta);
+    if (wheelFrame && Math.abs(scrollY - lastApplied) > 2) stopWheelEasing();
+    const start = wheelFrame && direction === nextDirection ? wheelTarget : scrollY;
+    const nextTarget = Math.min(maximum, Math.max(0, start + delta));
+    if (Math.abs(nextTarget - scrollY) < 0.5) {
+      stopWheelEasing();
+      return;
+    }
+    event.preventDefault();
+    wheelTarget = nextTarget;
+    direction = nextDirection;
+    if (!wheelFrame) {
+      lastApplied = scrollY;
+      lastTime = performance.now();
+      wheelFrame = requestAnimationFrame(easeWheel);
+    }
+  }, { passive: false });
+
+  for (const event of ["keydown", "pointerdown", "touchstart", "pagehide", "pageshow", "popstate"]) {
+    window.addEventListener(event, stopWheelEasing, { passive: true });
+  }
+  document.addEventListener("visibilitychange", () => { if (document.hidden) stopWheelEasing(); });
+  desktopPointer.addEventListener("change", stopWheelEasing);
+  reducedMotion.addEventListener("change", stopWheelEasing);
 }
