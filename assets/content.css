@@ -144,8 +144,7 @@
   z-index: 0;
 }
 
-.cover-controls::before {
-  content: "";
+.cover-indicator {
   position: absolute;
   left: 3px;
   top: 3px;
@@ -157,6 +156,11 @@
   transition: transform 0.45s ease;
   pointer-events: none;
   z-index: 1;
+}
+
+.cover-indicator-outgoing {
+  opacity: 0;
+  transition: none;
 }
 
 .cover-controls::after {
@@ -183,7 +187,7 @@
 }
 
 .grid-video .cover-controls { --glass-step: 20px; padding: 2px; }
-.grid-video .cover-controls::before { left: 2px; top: 2px; }
+.grid-video .cover-indicator { left: 2px; top: 2px; }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .cover-controls:not(.has-lens) { background: rgba(244, 251, 251, 0.18); }
@@ -223,7 +227,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cover-frame.is-active { animation: none; }
-  .cover-controls, .cover-controls::before, .cover-controls button { transition: none; }
+  .cover-controls, .cover-indicator, .cover-controls button { transition: none; }
 }
 
 /* Trim the blank margins in the 720 × 394 TactiDex figure before rounding it. */

@@ -153,12 +153,74 @@ for (const carousel of document.querySelectorAll(".cover-carousel")) {
   underlay.className = "cover-glass-lens";
   lens.setAttribute("aria-hidden", "true");
   underlay.setAttribute("aria-hidden", "true");
-  controls.prepend(underlay, lens);
+  const indicator = document.createElement("span");
+  indicator.className = "cover-indicator";
+  indicator.setAttribute("aria-hidden", "true");
+  controls.prepend(underlay, lens, indicator);
+  let indicatorAnimation;
+  const outgoingIndicators = new Set();
   let lensAnimation;
   let renderedImage;
   let renderedTexture;
   let transitionFromImage;
   let transitionUsesSnapshot = false;
+
+  function finishIndicator() {
+    indicatorAnimation?.cancel();
+    indicatorAnimation = null;
+    for (const marker of outgoingIndicators) {
+      marker.getAnimations().forEach(animation => animation.cancel());
+      marker.remove();
+    }
+    outgoingIndicators.clear();
+  }
+
+  function moveIndicator(from, to) {
+    const current = getComputedStyle(indicator);
+    const opacity = Number(current.opacity);
+    const transform = current.transform;
+    indicatorAnimation?.cancel();
+    indicatorAnimation = null;
+    const wraps = from === coverScenes.length - 1 && to === 0 && !coverMotion.matches;
+
+    if (wraps) {
+      // Crossfade the two endpoints instead of sweeping backwards over the
+      // middle dot. An interrupted transition keeps its visible starting state.
+      const outgoing = document.createElement("span");
+      outgoing.className = "cover-indicator cover-indicator-outgoing";
+      outgoing.setAttribute("aria-hidden", "true");
+      outgoing.style.transform = transform;
+      controls.append(outgoing);
+      outgoingIndicators.add(outgoing);
+      const fade = outgoing.animate([{ opacity }, { opacity: 0 }], { duration: 450, easing: "ease" });
+      const remove = () => { outgoing.remove(); outgoingIndicators.delete(outgoing); };
+      fade.finished.then(remove, remove);
+      indicator.style.transition = "none";
+      controls.style.setProperty("--active-slide", String(to));
+      // Commit the invisible endpoint before restoring adjacent-slide motion.
+      getComputedStyle(indicator).transform;
+      indicator.style.removeProperty("transition");
+    } else {
+      controls.style.setProperty("--active-slide", String(to));
+    }
+
+    if (coverMotion.matches) {
+      finishIndicator();
+    } else if (wraps || opacity < 1) {
+      const animation = indicator.animate([{ opacity: wraps ? 0 : opacity }, { opacity: 1 }], {
+        duration: 450,
+        easing: "ease",
+        fill: "both",
+      });
+      indicatorAnimation = animation;
+      animation.onfinish = () => {
+        if (indicatorAnimation === animation) {
+          indicatorAnimation = null;
+          animation.cancel();
+        }
+      };
+    }
+  }
 
   function drawSurface(canvas, source, width, height, tint = false) {
     if (canvas.width !== width) canvas.width = width;
@@ -330,8 +392,9 @@ for (const carousel of document.querySelectorAll(".cover-carousel")) {
           frame.classList.toggle("is-active", i === index);
           frame.setAttribute("aria-hidden", String(i !== index));
         });
+        const previousIndex = active;
         active = index;
-        controls.style.setProperty("--active-slide", String(active));
+        moveIndicator(previousIndex, active);
         dots.forEach((dot, i) => dot.setAttribute("aria-pressed", String(i === active)));
         refreshGlass(previousImage);
       }
@@ -379,6 +442,7 @@ for (const carousel of document.querySelectorAll(".cover-carousel")) {
     if (coverMotion.matches) {
       setPaused(true);
       finishGlass();
+      finishIndicator();
     }
   });
   if ("IntersectionObserver" in window) {
