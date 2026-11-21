@@ -189,8 +189,12 @@ for (const carousel of document.querySelectorAll(".cover-carousel")) {
     paint(started);
   }
 
-  first.addEventListener("load", () => refreshGlass(), { once: true });
-  if ("ResizeObserver" in window) new ResizeObserver(() => refreshGlass()).observe(controls);
+  first.addEventListener("load", () => refreshGlass());
+  if ("ResizeObserver" in window) {
+    const resizeObserver = new ResizeObserver(() => refreshGlass());
+    resizeObserver.observe(controls);
+    resizeObserver.observe(carousel);
+  }
 
   function schedule() {
     window.clearTimeout(timer);
@@ -214,6 +218,9 @@ for (const carousel of document.querySelectorAll(".cover-carousel")) {
     frame.alt = coverScenes[index].alt;
     frame.decoding = "async";
     frame.setAttribute("aria-hidden", "true");
+    frame.addEventListener("load", () => {
+      if (frame === frames[active]) refreshGlass();
+    });
     const ready = new Promise((resolve, reject) => {
       frame.onload = resolve;
       frame.onerror = () => reject(new Error("Cover image unavailable"));
