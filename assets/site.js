@@ -57,6 +57,7 @@ const coverScenes = [
   { image: 1, alt: "DexHLM human demonstrations of reading, handling objects, and drinking in a study" },
 ];
 const coverMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const glassTextures = new WeakMap();
 
 // A small optical texture sampled from the already-loaded cover. Only the outer
 // bevel bends pixels; the centre stays clear. No extra image or animation library.
@@ -65,6 +66,13 @@ function makeGlassTexture(image, bounds) {
   const frame = image.getBoundingClientRect();
   if (!frame.width || !frame.height) return null;
   const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  // Keep only the current geometry for each image. Scrolling moves both boxes
+  // together, so it does not invalidate their shared optical texture.
+  const key = [image.currentSrc, image.naturalWidth, image.naturalHeight,
+    frame.width, frame.height, bounds.width, bounds.height,
+    frame.left - bounds.left, frame.top - bounds.top, ratio].join(":");
+  const cached = glassTextures.get(image);
+  if (cached?.key === key) return cached.result;
   const width = Math.round(bounds.width * ratio);
   const height = Math.round(bounds.height * ratio);
   const margin = Math.ceil(8 * ratio);
@@ -117,7 +125,9 @@ function makeGlassTexture(image, bounds) {
     }
   }
   context.putImageData(output, 0, 0);
-  return { texture, lightBackground: brightness / count > 145 };
+  const result = { texture, lightBackground: brightness / count > 145 };
+  glassTextures.set(image, { key, result });
+  return result;
 }
 
 for (const carousel of document.querySelectorAll(".cover-carousel")) {

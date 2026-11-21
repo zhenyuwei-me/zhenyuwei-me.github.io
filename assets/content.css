@@ -49,6 +49,15 @@
   font-family: "Google Sans Flex", var(--font-display);
 }
 
+/* The glow keeps its original scale without creating a horizontal scroll area. */
+.hero::before,
+:root[data-theme="light"] .hero::before {
+  width: min(920px, 100vw);
+  background-size: min(920px, 120vw) 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 .pub-venue .pub-highlight {
   color: var(--accent);
   font-weight: 700;
