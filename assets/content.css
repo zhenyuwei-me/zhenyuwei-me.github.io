@@ -129,6 +129,7 @@
   backdrop-filter: blur(0.6px) saturate(1.05);
   box-shadow: 0 4px 10px rgba(10, 20, 25, 0.16), 0 0 0 0.5px rgba(10, 20, 25, 0.14);
   isolation: isolate;
+  transition: color 0.45s ease;
 }
 
 .cover-controls.has-lens { -webkit-backdrop-filter: none; backdrop-filter: none; }
@@ -153,7 +154,7 @@
   border-radius: 50%;
   background: rgba(15, 30, 35, 0.16);
   transform: translateX(calc(var(--active-slide, 0) * var(--glass-step)));
-  transition: transform 0.4s cubic-bezier(0.2, 1.35, 0.45, 1);
+  transition: transform 0.45s ease;
   pointer-events: none;
   z-index: 1;
 }
@@ -201,7 +202,7 @@
   border-radius: 50%;
   background: transparent;
   cursor: pointer;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition: transform 0.2s ease, color 0.45s ease;
 }
 
 .cover-controls button:hover { color: #087a71; transform: scale(1.08); }
@@ -222,7 +223,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cover-frame.is-active { animation: none; }
-  .cover-controls::before, .cover-controls button { transition: none; }
+  .cover-controls, .cover-controls::before, .cover-controls button { transition: none; }
 }
 
 /* Trim the blank margins in the 720 × 394 TactiDex figure before rounding it. */

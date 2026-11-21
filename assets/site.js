@@ -148,45 +148,113 @@ for (const carousel of document.querySelectorAll(".cover-carousel")) {
   let focused = false;
   let timer;
   const lens = document.createElement("canvas");
+  const underlay = document.createElement("canvas");
   lens.className = "cover-glass-lens";
+  underlay.className = "cover-glass-lens";
   lens.setAttribute("aria-hidden", "true");
-  controls.prepend(lens);
+  underlay.setAttribute("aria-hidden", "true");
+  controls.prepend(underlay, lens);
   let lensAnimation;
+  let renderedImage;
+  let renderedTexture;
+  let transitionFromImage;
+  let transitionUsesSnapshot = false;
+
+  function drawSurface(canvas, source, width, height, tint = false) {
+    if (canvas.width !== width) canvas.width = width;
+    if (canvas.height !== height) canvas.height = height;
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, width, height);
+    context.drawImage(source, 0, 0, width, height);
+    if (tint) {
+      context.globalCompositeOperation = "source-atop";
+      context.fillStyle = "rgba(255, 255, 255, 0.07)";
+      context.fillRect(0, 0, width, height);
+      context.globalCompositeOperation = "source-over";
+    }
+  }
+
+  function captureGlass(width, height) {
+    const snapshot = document.createElement("canvas");
+    snapshot.width = width;
+    snapshot.height = height;
+    const context = snapshot.getContext("2d");
+    context.drawImage(underlay, 0, 0, width, height);
+    context.globalAlpha = Number(getComputedStyle(lens).opacity);
+    context.drawImage(lens, 0, 0, width, height);
+    return snapshot;
+  }
+
+  function finishGlass() {
+    lensAnimation?.cancel();
+    lensAnimation = null;
+    transitionFromImage = null;
+    transitionUsesSnapshot = false;
+  }
 
   function refreshGlass(previousImage) {
-    window.cancelAnimationFrame(lensAnimation);
     const bounds = controls.getBoundingClientRect();
     let next, previous;
     try {
       next = makeGlassTexture(frames[active], bounds);
       if (!next) return;
-      if (previousImage && !coverMotion.matches) previous = makeGlassTexture(previousImage, bounds);
+      if (coverMotion.matches) finishGlass();
+      // Load, resize and visibility notifications may arrive together. Preserve
+      // the running fade when its image and geometry have not changed.
+      if (renderedImage === frames[active] && renderedTexture === next.texture) return;
+      if (transitionFromImage) previous = makeGlassTexture(transitionFromImage, bounds);
     } catch {
       // The translucent CSS surface remains usable if canvas sampling is unavailable.
       controls.classList.remove("has-lens");
       return;
     }
+    const width = next.texture.width;
+    const height = next.texture.height;
+    const changedImage = renderedImage !== frames[active];
+    const animate = changedImage && previousImage && renderedTexture && !coverMotion.matches;
+    const interrupted = Boolean(lensAnimation);
+    const snapshot = animate ? captureGlass(width, height) : null;
+
+    if (changedImage) finishGlass();
+    if (snapshot) {
+      drawSurface(underlay, snapshot, width, height);
+    } else if (lensAnimation && previous && !transitionUsesSnapshot) {
+      // Rotation or responsive image loading updates pixels without restarting
+      // an in-progress transition.
+      drawSurface(underlay, previous.texture, width, height, true);
+    } else if (lensAnimation && transitionUsesSnapshot && (underlay.width !== width || underlay.height !== height)) {
+      const resized = document.createElement("canvas");
+      resized.width = width;
+      resized.height = height;
+      resized.getContext("2d").drawImage(underlay, 0, 0, width, height);
+      drawSurface(underlay, resized, width, height);
+    }
+    drawSurface(lens, next.texture, width, height, true);
+    renderedImage = frames[active];
+    renderedTexture = next.texture;
     controls.classList.add("has-lens");
     controls.dataset.contrast = next.lightBackground ? "dark" : "light";
-    lens.width = next.texture.width;
-    lens.height = next.texture.height;
-    const context = lens.getContext("2d");
-    const started = performance.now();
-    function paint(now) {
-      const progress = previous ? Math.min(1, (now - started) / 450) : 1;
-      context.clearRect(0, 0, lens.width, lens.height);
-      if (previous) context.drawImage(previous.texture, 0, 0);
-      context.globalAlpha = 1 - Math.pow(1 - progress, 3);
-      context.drawImage(next.texture, 0, 0);
-      context.globalAlpha = 1;
-      // Tint the composed optical surface, including its sampled image pixels.
-      context.globalCompositeOperation = "source-atop";
-      context.fillStyle = "rgba(255, 255, 255, 0.07)";
-      context.fillRect(0, 0, lens.width, lens.height);
-      context.globalCompositeOperation = "source-over";
-      if (progress < 1) lensAnimation = window.requestAnimationFrame(paint);
+    if (animate) {
+      transitionFromImage = previousImage;
+      transitionUsesSnapshot = interrupted;
+      const imageAnimation = frames[active].getAnimations().find(animation => animation.animationName === "cover-fade-in");
+      const animation = lens.animate([{ opacity: 0 }, { opacity: 1 }], {
+        duration: 450,
+        easing: "ease",
+        fill: "both",
+      });
+      lensAnimation = animation;
+      if (imageAnimation) {
+        Promise.all([animation.ready, imageAnimation.ready]).then(() => {
+          if (lensAnimation === animation && imageAnimation.startTime !== null) {
+            animation.startTime = imageAnimation.startTime;
+          }
+        }).catch(() => {});
+      }
+      animation.onfinish = () => {
+        if (lensAnimation === animation) finishGlass();
+      };
     }
-    paint(started);
   }
 
   first.addEventListener("load", () => refreshGlass());
@@ -263,9 +331,9 @@ for (const carousel of document.querySelectorAll(".cover-carousel")) {
           frame.setAttribute("aria-hidden", String(i !== index));
         });
         active = index;
-        refreshGlass(previousImage);
         controls.style.setProperty("--active-slide", String(active));
         dots.forEach((dot, i) => dot.setAttribute("aria-pressed", String(i === active)));
+        refreshGlass(previousImage);
       }
     } catch {
       // Retain the current picture; the next automatic turn tries the next scene.
@@ -308,7 +376,10 @@ for (const carousel of document.querySelectorAll(".cover-carousel")) {
   });
   document.addEventListener("visibilitychange", schedule);
   coverMotion.addEventListener("change", () => {
-    if (coverMotion.matches) setPaused(true);
+    if (coverMotion.matches) {
+      setPaused(true);
+      finishGlass();
+    }
   });
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(([entry]) => {
