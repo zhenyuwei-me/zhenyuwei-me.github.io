@@ -58,9 +58,40 @@
   background-repeat: no-repeat;
 }
 
+.pub-venue {
+  font-size: 0.9375rem;
+}
+
+.pub-venue .venue-label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  vertical-align: middle;
+  white-space: nowrap;
+  line-height: 1.35;
+}
+
+.pub-venue .venue-name {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-weight: 700;
+}
+
+.pub-venue .venue-year {
+  color: var(--text-secondary);
+  font-size: 0.93em;
+  font-weight: 400;
+}
+
 .pub-venue .pub-highlight {
   color: var(--accent);
   font-weight: 700;
+  font-size: 0.9em;
+  margin-left: 7px;
+  white-space: nowrap;
 }
 
 .pub-links a[aria-disabled="true"] {

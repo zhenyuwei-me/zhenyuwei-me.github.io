@@ -7,7 +7,7 @@
   <title>会议名称样式候选 · Zhenyu Wei</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/style.css">
-  <link rel="stylesheet" href="assets/content.css?v=f51051c872cb">
+  <link rel="stylesheet" href="assets/content.css?v=0ccf5b5b0657">
   <style>
     .options-page { max-width: 1080px; margin: 0 auto; padding: 32px 28px 64px; }
     .options-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 36px; }
@@ -29,6 +29,7 @@
     .venue-year { color: var(--text-secondary); font-size: 0.93em; font-weight: 400; }
     .venue-line { color: var(--text-secondary); font-size: 15px; }
     .venue-line .oral { color: var(--accent); font-weight: 700; font-size: 0.9em; margin-left: 7px; white-space: nowrap; }
+    .example-list .venue-name { background: transparent; border: 0; padding: 0; color: inherit; }
     [data-venue-style="a"] .venue-name { color: var(--accent); }
     [data-venue-style="b"] .venue-name { color: var(--accent); background: var(--accent-dim); border: 1px solid color-mix(in srgb,var(--accent) 25%,transparent); border-radius: 6px; padding: 3px 8px; }
     [data-venue-style="c"] .venue-name { color: var(--accent); border-left: 3px solid var(--accent); padding-left: 9px; }
@@ -61,26 +62,26 @@
     <div class="options-grid" id="venue-options">
       <section class="option" data-venue-style="a">
         <div class="option-head"><button class="option-select" data-select="a" aria-pressed="false">A · 蓝绿加粗</button><span class="option-description">最贴近现有版式</span></div>
-        <div class="venue-demo"><span class="paper-short">DexHLM</span><div class="venue-line"><span class="venue-label"><span class="venue-name">NeurIPS</span><span class="venue-year">2026</span></span></div></div>
-        <div class="venue-demo"><span class="paper-short">TactiDex</span><div class="venue-line"><span class="venue-label"><span class="venue-name">ACM MM</span><span class="venue-year">2026</span></span><span class="oral">(Oral)</span></div></div>
+        <div class="venue-demo"><span class="paper-short">DexHLM</span><div class="venue-line"><span class="venue-label"><span class="venue-name">NeurIPS</span> <span class="venue-year">2026</span></span></div></div>
+        <div class="venue-demo"><span class="paper-short">TactiDex</span><div class="venue-line"><span class="venue-label"><span class="venue-name">ACM MM</span> <span class="venue-year">2026</span></span> <span class="oral">Oral</span></div></div>
       </section>
       <section class="option is-selected" data-venue-style="b">
         <div class="option-head"><button class="option-select" data-select="b" aria-pressed="true">B · 浅色标签<span class="recommendation">推荐</span></button><span class="option-description">清晰而克制</span></div>
-        <div class="venue-demo"><span class="paper-short">DexHLM</span><div class="venue-line"><span class="venue-label"><span class="venue-name">NeurIPS</span><span class="venue-year">2026</span></span></div></div>
-        <div class="venue-demo"><span class="paper-short">TactiDex</span><div class="venue-line"><span class="venue-label"><span class="venue-name">ACM MM</span><span class="venue-year">2026</span></span><span class="oral">(Oral)</span></div></div>
+        <div class="venue-demo"><span class="paper-short">DexHLM</span><div class="venue-line"><span class="venue-label"><span class="venue-name">NeurIPS</span> <span class="venue-year">2026</span></span></div></div>
+        <div class="venue-demo"><span class="paper-short">TactiDex</span><div class="venue-line"><span class="venue-label"><span class="venue-name">ACM MM</span> <span class="venue-year">2026</span></span> <span class="oral">Oral</span></div></div>
       </section>
       <section class="option" data-venue-style="c">
         <div class="option-head"><button class="option-select" data-select="c" aria-pressed="false">C · 左侧细线</button><span class="option-description">呼应页面章节标题</span></div>
-        <div class="venue-demo"><span class="paper-short">DexHLM</span><div class="venue-line"><span class="venue-label"><span class="venue-name">NeurIPS</span><span class="venue-year">2026</span></span></div></div>
-        <div class="venue-demo"><span class="paper-short">TactiDex</span><div class="venue-line"><span class="venue-label"><span class="venue-name">ACM MM</span><span class="venue-year">2026</span></span><span class="oral">(Oral)</span></div></div>
+        <div class="venue-demo"><span class="paper-short">DexHLM</span><div class="venue-line"><span class="venue-label"><span class="venue-name">NeurIPS</span> <span class="venue-year">2026</span></span></div></div>
+        <div class="venue-demo"><span class="paper-short">TactiDex</span><div class="venue-line"><span class="venue-label"><span class="venue-name">ACM MM</span> <span class="venue-year">2026</span></span> <span class="oral">Oral</span></div></div>
       </section>
       <section class="option" data-venue-style="d">
         <div class="option-head"><button class="option-select" data-select="d" aria-pressed="false">D · 实色标牌</button><span class="option-description">强调最明显</span></div>
-        <div class="venue-demo"><span class="paper-short">DexHLM</span><div class="venue-line"><span class="venue-label"><span class="venue-name">NeurIPS</span><span class="venue-year">2026</span></span></div></div>
-        <div class="venue-demo"><span class="paper-short">TactiDex</span><div class="venue-line"><span class="venue-label"><span class="venue-name">ACM MM</span><span class="venue-year">2026</span></span><span class="oral">(Oral)</span></div></div>
+        <div class="venue-demo"><span class="paper-short">DexHLM</span><div class="venue-line"><span class="venue-label"><span class="venue-name">NeurIPS</span> <span class="venue-year">2026</span></span></div></div>
+        <div class="venue-demo"><span class="paper-short">TactiDex</span><div class="venue-line"><span class="venue-label"><span class="venue-name">ACM MM</span> <span class="venue-year">2026</span></span> <span class="oral">Oral</span></div></div>
       </section>
     </div>
-    <div class="example-head"><h2 id="example-label">B · 浅色标签 — 完整卡片预览</h2><span>仅此预览页切换，正式主页样式保持原样</span></div>
+    <div class="example-head"><h2 id="example-label">B · 浅色标签 — 完整卡片预览</h2><span>正式主页已采用 B · 浅色标签</span></div>
     <div class="example-list" data-venue-style="b">
       <article class="pub">
         <div class="pub-media"><img src="assets/media/dexhlm-3-480.webp" alt="DexHLM" width="480" height="270"></div>
@@ -88,7 +89,7 @@
           <h3 class="pub-title">DexHLM: An Egocentric Dexterous Human Loco-Manipulation Dataset for Humanoids with Tactile Prediction</h3>
           <p class="pub-authors"><strong>Zhenyu Wei</strong><sup>*</sup>, Haoyang Luo<sup>*</sup>, Chixuan Zhang, Guo Chen, Suting Ni, Siyuan Huang, Baoxiong Jia<sup>†</sup>, Jingya Wang<sup>†</sup></p>
           <p class="pub-note">* Co-first authors · † Corresponding authors</p>
-          <p class="pub-venue venue-line"><span class="venue-label"><span class="venue-name">NeurIPS</span><span class="venue-year">2026</span></span></p>
+          <p class="pub-venue venue-line"><span class="venue-label"><span class="venue-name">NeurIPS</span> <span class="venue-year">2026</span></span></p>
           <p class="pub-links"><a aria-disabled="true" role="link" tabindex="-1">Website Page</a><a href="https://openreview.net/forum?id=0UDyFy4rIa" target="_blank" rel="noopener">Paper</a></p>
         </div>
       </article>
@@ -98,7 +99,7 @@
           <h3 class="pub-title">TactiDex: A Real-World Tactile-Guided Benchmark for Human-Like Dexterous Manipulation</h3>
           <p class="pub-authors">Suting Ni, Hanbing Zhang, <strong>Zhenyu Wei</strong>, Guo Chen, Chixuan Zhang, Ye Shi, Jingya Wang<sup>†</sup></p>
           <p class="pub-note">† Corresponding author</p>
-          <p class="pub-venue venue-line"><span class="venue-label"><span class="venue-name">ACM MM</span><span class="venue-year">2026</span></span><span class="oral">(Oral)</span></p>
+          <p class="pub-venue venue-line"><span class="venue-label"><span class="venue-name">ACM MM</span> <span class="venue-year">2026</span></span> <span class="oral">Oral</span></p>
           <p class="pub-links"><a href="https://tactidex.github.io/" target="_blank" rel="noopener">Website Page</a><a href="https://arxiv.org/abs/2607.09190" target="_blank" rel="noopener">Paper</a></p>
         </div>
       </article>
