@@ -7,7 +7,7 @@
   <title>会议名称样式候选 · Zhenyu Wei</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/style.css">
-  <link rel="stylesheet" href="assets/content.css?v=0ccf5b5b0657">
+  <link rel="stylesheet" href="assets/content.css?v=cf30765c1f76">
   <style>
     .options-page { max-width: 1080px; margin: 0 auto; padding: 32px 28px 64px; }
     .options-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 36px; }
@@ -31,7 +31,10 @@
     .venue-line .oral { color: var(--accent); font-weight: 700; font-size: 0.9em; margin-left: 7px; white-space: nowrap; }
     .example-list .venue-name { background: transparent; border: 0; padding: 0; color: inherit; }
     [data-venue-style="a"] .venue-name { color: var(--accent); }
-    [data-venue-style="b"] .venue-name { color: var(--accent); background: var(--accent-dim); border: 1px solid color-mix(in srgb,var(--accent) 25%,transparent); border-radius: 6px; padding: 3px 8px; }
+    [data-venue-style="b"] .venue-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 7px; font-size: var(--fs-sm); line-height: 1.4; }
+    [data-venue-style="b"] .venue-label { display: contents; }
+    [data-venue-style="b"] .venue-name { color: color-mix(in srgb,var(--accent) 94%,var(--bg-elevated)); background: color-mix(in srgb,var(--accent) 4%,transparent); border: 1px solid color-mix(in srgb,var(--accent) 16%,transparent); border-radius: 5px; padding: 2px 6px; font-weight: 600; }
+    [data-venue-style="b"] .venue-year, [data-venue-style="b"] .oral { font-size: 1em; margin-left: 0; }
     [data-venue-style="c"] .venue-name { color: var(--accent); border-left: 3px solid var(--accent); padding-left: 9px; }
     [data-venue-style="d"] .venue-name { color: var(--bg); background: var(--accent); border-radius: 4px; padding: 4px 9px; }
     .example-head { display: flex; gap: 16px; align-items: baseline; justify-content: space-between; margin: 34px 0 16px; }
